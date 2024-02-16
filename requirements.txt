@@ -1,0 +1,13 @@
+jupyter
+azure-storage-blob
+azure-identity
+pyarrow
+pandas
+fastapi
+uvicorn[standard]
+websockets
+pexpect
+llama-index==0.9.48
+pandasai
+plotly==5.14.1
+pydantic

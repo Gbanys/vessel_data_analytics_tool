@@ -1,0 +1,15 @@
+version: '3.6'
+
+services:
+  app:
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+     - OPENAI_API_KEY
+     - STORAGE_ACCOUNT_URL
+    ports:
+     - "80:80"
+    volumes:
+     - .:/home/vessel_data_analytics_tool

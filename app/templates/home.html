@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+var ws = new WebSocket("ws://localhost:8000/ws");
+ws.onmessage = function(event) {
+    data = JSON.parse(event.data);
+    if(data.sender === 'chatbot') {
+        content = `
+        <div>
+            <div id="chatbot-message-div">
+                <p>${data.message}</p>
+            </div>
+        </div>
+    `;
+    }
+    else if(data.sender === 'chatbot_plotter'){
+        content = `
+        <div>
+            <div id="chatbot-message-div">
+                <img src=${data.message}>
+            </div>
+        </div>
+    `;
+    }
+    document.getElementById("messages").innerHTML += content;
+    document.getElementById("loading-icon-div").style.visibility = "visible";
+    document.getElementById("loading-icon-img").src = "static/img/green_tick.jpg";
+    document.getElementById("loading-icon-msg").innerHTML = "DONE";
+};
+function sendMessage(event) {
+    var input = document.getElementById("messageText");
+    content = `
+        <div style="background-color: black; width: 100%;">
+            <div id='user-message-div'>
+                <p>${input.value}</p>
+            </div>
+        </div>
+    `;
+    document.getElementById("messages").innerHTML += content;
+    document.getElementById("loading-icon-div").style.visibility = "visible";
+    document.getElementById("loading-icon-img").src = "static/img/rotating_circle.gif";
+    document.getElementById("loading-icon-msg").innerHTML = "Generating reponse...";
+    ws.send(input.value);
+    input.value = '';
+    event.preventDefault();
+}
+</script>
+<head>
+    <meta charset="UTF-8">
+    <title>Vessel Data Analytics Tool</title>
+    <link href="{{ url_for('static', path='/css/style.css') }}" rel="stylesheet" type="text/css"/>
+</head>
+<body style="background-color: #015434">
+<div class="container">
+    <div style="text-align: center;">
+        <h1 style="color: #015434; text-align: center; position: relative; display: inline-block">Vessel Data Analytics Tool</h1>
+        <img style="position: relative; display: inline-block; margin-left: 10px; top: 10px;" src="static/img/magnifying_glass.jpg" height="60px;" width="60px;">
+    </div>
+    <strong>The model tries to do these three things:</strong><br>
+    <ul>
+        <li>Answer any queries about unified data or period data of a particular vessel</li>
+        <li>Answer any queries about vessel particulars</li>
+        <li>Tries to make plots from the given data</li>
+    </ul>
+    <div style="text-align: center;">
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off"/>
+            <button id="submit-button">Submit</button>
+        </form>
+    </div>
+    <div id="loading-icon-div" style="visibility: hidden; text-align: center;">
+        <img id="loading-icon-img" style="position: relative; display: inline-block;" src="static/img/rotating_circle.gif" alt="circle" height="70px;" width="100px;">
+        <p id="loading-icon-msg" style="position: relative; display: inline-block; vertical-align: top; top: 10px;">Generating response...</p>
+    </div>
+    <div id="messages">
+    </div>
+</div>
+</body>
+</html>
